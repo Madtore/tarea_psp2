@@ -258,7 +258,7 @@ public class InterfazPrincipal {
 				if (resultado == JFileChooser.APPROVE_OPTION) {
 					String ficheroSelecionado = ficheroEligido.getSelectedFile().toString();
 					rutaFichero = ficheroSelecionado;
-					btnSeleccionarFichero.setEnabled(true);
+					btnAbreFichero.setEnabled(true);
 				}
 			}
 		});
