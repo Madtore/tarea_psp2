@@ -234,7 +234,7 @@ public class InterfazPrincipal {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (rutaFichero.equals("")) {
+				if (rutaFichero == null) {
 					new JOptionPane();
 					JOptionPane.showMessageDialog(null, "Error selecionar el fichero",
 							"ERROR", JOptionPane.WARNING_MESSAGE);
