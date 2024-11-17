@@ -1,6 +1,5 @@
 package tarea_psp2.tarea;
 
-import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -12,12 +11,10 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -29,6 +26,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 public class InterfazPrincipal {
 
@@ -73,7 +71,8 @@ public class InterfazPrincipal {
 
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (Exception e) {
+		} catch (ClassNotFoundException | IllegalAccessException | InstantiationException
+				| UnsupportedLookAndFeelException e) {
 			e.printStackTrace();
 		}
 
@@ -86,10 +85,7 @@ public class InterfazPrincipal {
 		panelBotones.add(etiquetaTitulo);
 
 		btnAppIzquierda = new JButton("Note Pad");
-		btnAppIzquierda.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			}
-		});
+
 		btnAppIzquierda.setBounds(50, 70, 150, 69);
 		btnAppIzquierda.addActionListener(new ActionListener() {
 
@@ -142,11 +138,12 @@ public class InterfazPrincipal {
 
 		btnAbrirUrl.addActionListener(new ActionListener() {
 
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				String url = campoUrl.getText().toLowerCase();
 				if (!url.startsWith("http://") && !url.startsWith("https://")) {
-			        url = "http://" + url; 
-			    }
+					url = "http://" + url;
+				}
 
 				String urlPattern = "^(https?://)?([\\w-]+\\.)+[\\w-]+(/[\\w-./?%&=]*)?$";
 				Pattern pattern = Pattern.compile(urlPattern);
@@ -157,7 +154,7 @@ public class InterfazPrincipal {
 							JOptionPane.ERROR_MESSAGE);
 					return;
 				}
-				
+
 				if (!matcher.matches()) {
 					JOptionPane.showMessageDialog(frame, "Por favor, ingresa una URL válida.", "Error url",
 							JOptionPane.ERROR_MESSAGE);
@@ -218,6 +215,7 @@ public class InterfazPrincipal {
 		panelAreaTexto.add(btnEliminaUrl);
 
 		btnEliminaUrl.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				String urlSeleccionada = urlLista.getSelectedValue();
 				if (urlSeleccionada != null) {
@@ -228,29 +226,30 @@ public class InterfazPrincipal {
 		});
 
 		frame.getContentPane().add(panelBotones);
-		
+
 		JButton btnAbreFichero = new JButton("Abrir Fichero");
-		btnAbreFichero.addActionListener( new ActionListener() {
-			
+		btnAbreFichero.addActionListener(new ActionListener() {
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (rutaFichero == null) {
 					new JOptionPane();
 					JOptionPane.showMessageDialog(null, "Error selecionar el fichero",
 							"ERROR", JOptionPane.WARNING_MESSAGE);
-				}else {
+				} else {
 					lanzadorAplicacione.lanzaAplicacion(rutaFichero);
 				}
-				
+
 			}
 		});
 		btnAbreFichero.setBounds(604, 70, 150, 30);
-		
+
 		panelBotones.add(btnAbreFichero);
-		
+
 		JButton btnSeleccionarFichero = new JButton("Seleccionar fichero");
 		btnSeleccionarFichero.setBounds(604, 111, 150, 30);
 		btnSeleccionarFichero.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				JFileChooser ficheroEligido = new JFileChooser();
 				ficheroEligido.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -271,6 +270,7 @@ public class InterfazPrincipal {
 		panelAreaTexto.add(btnSeleccionarDirectorio);
 
 		btnSeleccionarDirectorio.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				JFileChooser directorioEligido = new JFileChooser();
 				directorioEligido.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -317,7 +317,9 @@ class GestorUrls {
 			try {
 				archivo.createNewFile();
 			} catch (IOException e) {
-				System.out.println("Error al crear el archivo de URLs: " + e.getMessage());
+				new JOptionPane();
+				JOptionPane.showMessageDialog(null, "Error al inizializar el fichero",
+						"ERROR", JOptionPane.WARNING_MESSAGE);
 			}
 		}
 	}
@@ -327,7 +329,9 @@ class GestorUrls {
 			escritor.write(url);
 			escritor.newLine();
 		} catch (IOException e) {
-			System.out.println("Error al guardar la URL: " + e.getMessage());
+			new JOptionPane();
+			JOptionPane.showMessageDialog(null, "Error al actualizar el fichero",
+					"ERROR", JOptionPane.WARNING_MESSAGE);
 		}
 	}
 
@@ -338,9 +342,13 @@ class GestorUrls {
 				escritor.newLine();
 			}
 		} catch (FileNotFoundException e) {
-			System.out.println("Error al leer el archivo de URLs: " + e.getMessage());
+			new JOptionPane();
+			JOptionPane.showMessageDialog(null, "Error al actualizar el fichero",
+					"ERROR", JOptionPane.WARNING_MESSAGE);
 		} catch (IOException e) {
-			System.out.println("Error al escribir en el archivo de URLs: " + e.getMessage());
+			new JOptionPane();
+			JOptionPane.showMessageDialog(null, "Error al actualizar el fichero",
+					"ERROR", JOptionPane.WARNING_MESSAGE);
 		}
 	}
 
@@ -353,9 +361,13 @@ class GestorUrls {
 				urls.add(linea);
 			}
 		} catch (FileNotFoundException e) {
-			System.out.println("Error al leer el archivo de URLs: " + e.getMessage());
+			new JOptionPane();
+			JOptionPane.showMessageDialog(null, "Error al cargar el fichero",
+					"ERROR", JOptionPane.WARNING_MESSAGE);
 		} catch (IOException e) {
-			System.out.println("Error al leer el archivo de URLs: " + e.getMessage());
+			new JOptionPane();
+			JOptionPane.showMessageDialog(null, "Error al cargar el fichero",
+					"ERROR", JOptionPane.WARNING_MESSAGE);
 		}
 
 		return urls;
@@ -406,7 +418,7 @@ class LanzadorAplicacione {
 			Process proceso = procesoBuilder.start();
 
 			int codigoSalida = proceso.waitFor();
-			
+
 			if (codigoSalida != 0) {
 				new JOptionPane();
 				JOptionPane.showMessageDialog(null, "Error al abrir la applicacion. Código de salida: " + codigoSalida,
