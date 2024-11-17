@@ -97,7 +97,7 @@ public class InterfazPrincipal {
 		});
 		panelBotones.add(btnAppIzquierda);
 
-		btnAppCentro = new JButton("Pait");
+		btnAppCentro = new JButton("Paint");
 		btnAppCentro.setBounds(220, 70, 150, 69);
 		btnAppCentro.addActionListener(new ActionListener() {
 
@@ -242,8 +242,9 @@ public class InterfazPrincipal {
 
 			}
 		});
+		
 		btnAbreFichero.setBounds(604, 70, 150, 30);
-
+		btnAbreFichero.setEnabled(false);
 		panelBotones.add(btnAbreFichero);
 
 		JButton btnSeleccionarFichero = new JButton("Seleccionar fichero");
@@ -256,8 +257,8 @@ public class InterfazPrincipal {
 				int resultado = ficheroEligido.showOpenDialog(frame);
 				if (resultado == JFileChooser.APPROVE_OPTION) {
 					String ficheroSelecionado = ficheroEligido.getSelectedFile().toString();
-					System.out.print(ficheroSelecionado);
 					rutaFichero = ficheroSelecionado;
+					btnSeleccionarFichero.setEnabled(true);
 				}
 			}
 		});
