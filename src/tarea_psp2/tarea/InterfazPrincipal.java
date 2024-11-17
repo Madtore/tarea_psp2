@@ -1,5 +1,6 @@
 package tarea_psp2.tarea;
 
+import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -11,6 +12,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -54,6 +56,7 @@ public class InterfazPrincipal {
 	private GestorUrls gestorUrls;
 	private LanzadorNavegador lanzadorNavegador;
 	private LanzadorAplicacione lanzadorAplicacione;
+	private String rutaFichero;
 
 	public InterfazPrincipal() {
 		this.gestorUrls = new GestorUrls();
@@ -92,7 +95,7 @@ public class InterfazPrincipal {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				lanzadorAplicacione.lanzaAplicacione("notepad");
+				lanzadorAplicacione.lanzaAplicacion("notepad");
 
 			}
 		});
@@ -104,7 +107,7 @@ public class InterfazPrincipal {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				lanzadorAplicacione.lanzaAplicacione("mspaint");
+				lanzadorAplicacione.lanzaAplicacion("mspaint");
 
 			}
 		});
@@ -116,7 +119,7 @@ public class InterfazPrincipal {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				lanzadorAplicacione.lanzaAplicacione("calc");
+				lanzadorAplicacione.lanzaAplicacion("calc");
 
 			}
 		});
@@ -227,11 +230,38 @@ public class InterfazPrincipal {
 		frame.getContentPane().add(panelBotones);
 		
 		JButton btnAbreFichero = new JButton("Abrir Fichero");
+		btnAbreFichero.addActionListener( new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (rutaFichero.equals("")) {
+					new JOptionPane();
+					JOptionPane.showMessageDialog(null, "Error selecionar el fichero",
+							"ERROR", JOptionPane.WARNING_MESSAGE);
+				}else {
+					lanzadorAplicacione.lanzaAplicacion(rutaFichero);
+				}
+				
+			}
+		});
 		btnAbreFichero.setBounds(604, 70, 150, 30);
+		
 		panelBotones.add(btnAbreFichero);
 		
 		JButton btnSeleccionarFichero = new JButton("Seleccionar fichero");
 		btnSeleccionarFichero.setBounds(604, 111, 150, 30);
+		btnSeleccionarFichero.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser ficheroEligido = new JFileChooser();
+				ficheroEligido.setFileSelectionMode(JFileChooser.FILES_ONLY);
+				int resultado = ficheroEligido.showOpenDialog(frame);
+				if (resultado == JFileChooser.APPROVE_OPTION) {
+					String ficheroSelecionado = ficheroEligido.getSelectedFile().toString();
+					System.out.print(ficheroSelecionado);
+					rutaFichero = ficheroSelecionado;
+				}
+			}
+		});
 		panelBotones.add(btnSeleccionarFichero);
 		frame.getContentPane().add(panelNavegacion);
 		frame.getContentPane().add(panelAreaTexto);
@@ -242,11 +272,11 @@ public class InterfazPrincipal {
 
 		btnSeleccionarDirectorio.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				JFileChooser directorioChooser = new JFileChooser();
-				directorioChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-				int resultado = directorioChooser.showOpenDialog(frame);
+				JFileChooser directorioEligido = new JFileChooser();
+				directorioEligido.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+				int resultado = directorioEligido.showOpenDialog(frame);
 				if (resultado == JFileChooser.APPROVE_OPTION) {
-					File directorioSeleccionado = directorioChooser.getSelectedFile();
+					File directorioSeleccionado = directorioEligido.getSelectedFile();
 					gestorUrls.establecerUrl(directorioSeleccionado);
 				}
 			}
@@ -369,13 +399,19 @@ class LanzadorNavegador {
 }
 
 class LanzadorAplicacione {
-	public void lanzaAplicacione(String app) {
+	public void lanzaAplicacion(String app) {
 		ProcessBuilder procesoBuilder = new ProcessBuilder("CMD", "/c", app);
 
 		try {
 			Process proceso = procesoBuilder.start();
 
 			int codigoSalida = proceso.waitFor();
+			
+			if (codigoSalida != 0) {
+				new JOptionPane();
+				JOptionPane.showMessageDialog(null, "Error al abrir la applicacion. Código de salida: " + codigoSalida,
+						"ERROR", JOptionPane.WARNING_MESSAGE);
+			}
 		} catch (IOException e) {
 			new JOptionPane();
 			JOptionPane.showMessageDialog(null, "Error al ejecutar el comando: " + e.getMessage(), "ERROR",
